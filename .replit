@@ -1,0 +1,6 @@
+run = "php artisan serve"
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "php artisan serve"]
