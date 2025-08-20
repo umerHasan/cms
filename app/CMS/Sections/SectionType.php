@@ -1,6 +1,6 @@
 <?php
 
-namespace App\CMS;
+namespace App\CMS\Sections;
 
 class SectionType
 {
