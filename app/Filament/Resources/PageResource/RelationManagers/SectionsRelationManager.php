@@ -107,19 +107,20 @@ class SectionsRelationManager extends RelationManager
                         return DB::transaction(function () use ($data) {
                             $def = SectionType::get($data['section_type']);
                             $modelClass = $def['model'];
+                    
                             /** @var Model $sectionable */
                             $sectionable = new $modelClass();
-                            $sectionable->fill(self::extractConcreteSectionData($data, $def['key']))->save();
-
+                            $sectionable->fill(self::extractConcreteSectionData($data, $data['section_type']))->save();
+                    
                             $ps = PageSection::create([
-                                'page_id'         => $this->ownerRecord->id,
-                                'section_type'    => $def['key'],
-                                'view_file'       => $data['view_file'] ?: $def['view'],
-                                'sectionable_type'=> $modelClass,
-                                'sectionable_id'  => $sectionable->id,
-                                'sort_order'      => (int) $this->ownerRecord->sections()->max('sort_order') + 1,
+                                'page_id'          => $this->ownerRecord->id,
+                                'section_type'     => $data['section_type'],           // <— use selected key
+                                'view_file'        => $data['view_file'] ?: $def['view'],
+                                'sectionable_type' => $modelClass,
+                                'sectionable_id'   => $sectionable->id,
+                                'sort_order'       => (int) $this->ownerRecord->sections()->max('sort_order') + 1,
                             ]);
-
+                    
                             if (method_exists($sectionable, 'products') && isset($data['products'])) {
                                 $sync = [];
                                 foreach (array_values($data['products']) as $i => $pid) {
@@ -127,10 +128,10 @@ class SectionsRelationManager extends RelationManager
                                 }
                                 $sectionable->products()->sync($sync);
                             }
-
+                    
                             return $ps;
                         });
-                    }),
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -138,20 +139,24 @@ class SectionsRelationManager extends RelationManager
                     ->using(function (Model $record, array $data): Model {
                         return DB::transaction(function () use ($record, $data) {
                             $def = SectionType::get($data['section_type']);
+                    
                             $sectionable = $record->sectionable;
                             if (! $sectionable || get_class($sectionable) !== $def['model']) {
-                                if ($sectionable) $sectionable->delete();
+                                if ($sectionable) {
+                                    $sectionable->delete();
+                                }
                                 $sectionable = new ($def['model']);
                             }
-                            $sectionable->fill(self::extractConcreteSectionData($data, $def['key']))->save();
-
+                    
+                            $sectionable->fill(self::extractConcreteSectionData($data, $data['section_type']))->save();
+                    
                             $record->update([
-                                'section_type'      => $def['key'],
-                                'view_file'         => $data['view_file'] ?: $def['view'],
-                                'sectionable_type'  => $def['model'],
-                                'sectionable_id'    => $sectionable->id,
+                                'section_type'     => $data['section_type'],           // <— use selected key
+                                'view_file'        => $data['view_file'] ?: $def['view'],
+                                'sectionable_type' => $def['model'],
+                                'sectionable_id'   => $sectionable->id,
                             ]);
-
+                    
                             if (method_exists($sectionable, 'products') && isset($data['products'])) {
                                 $sync = [];
                                 foreach (array_values($data['products']) as $i => $pid) {
@@ -159,10 +164,11 @@ class SectionsRelationManager extends RelationManager
                                 }
                                 $sectionable->products()->sync($sync);
                             }
-
+                    
                             return $record->refresh();
                         });
                     }),
+                    
                 Tables\Actions\DeleteAction::make()
                     ->after(function (Model $record) {
                         optional($record->sectionable)->delete();

@@ -2,55 +2,98 @@
 
 namespace App\CMS\Sections;
 
-use Filament\Forms;
-use Filament\Forms\Components\{Grid, TextInput, Textarea, Select, FileUpload, Group};
 use App\Models\Page;
+use Filament\Forms;
+use Filament\Forms\Components\{Grid, TextInput, Textarea, Select, FileUpload, Section};
+use Filament\Forms\Get;
 
 class HeroSectionForm
 {
     public static function schema(): array
     {
         return [
-            Grid::make(12)->schema([
-                FileUpload::make('image_path')
-                    ->disk('public')->directory('uploads/sections/hero')
-                    ->image()->imageEditor()->columnSpan(12),
+            Section::make('Hero Content')
+                ->description('Headline, copy, and media for the hero area')
+                ->schema([
+                    Grid::make(12)->schema([
+                        FileUpload::make('image_path')
+                            ->label('Hero Image')
+                            ->disk('public')
+                            ->directory('uploads/sections/hero')
+                            ->image()
+                            ->imageEditor()
+                            ->columnSpan(12),
 
-                TextInput::make('title')->required()->maxLength(255)->columnSpan(6),
-                Textarea::make('description')->rows(3)->columnSpan(6),
+                        TextInput::make('title')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpan(6),
 
-                Group::make()->schema([
-                    TextInput::make('primary_button_text')->maxLength(255),
-                    Select::make('primary_button_type')
-                        ->options(['internal'=>'Internal','external'=>'External'])
-                        ->required()->live(),
-                    Select::make('primary_button_page_id')
-                        ->label('Primary Internal Page')
-                        ->relationship('primaryInternalPage','title')
-                        ->searchable()
-                        ->visible(fn($get) => $get('primary_button_type') === 'internal'),
-                    TextInput::make('primary_button_url')
-                        ->label('Primary External URL')
-                        ->url()
-                        ->visible(fn($get) => $get('primary_button_type') === 'external'),
-                ])->columns(2)->columnSpan(12),
+                        Textarea::make('description')
+                            ->label('Body')
+                            ->rows(4)
+                            ->columnSpan(6),
+                    ]),
+                ])
+                ->collapsible()
+                ->collapsed(false),
 
-                Group::make()->schema([
-                    TextInput::make('secondary_button_text')->maxLength(255),
-                    Select::make('secondary_button_type')
-                        ->options(['internal'=>'Internal','external'=>'External'])
-                        ->required()->live(),
-                    Select::make('secondary_button_page_id')
-                        ->label('Secondary Internal Page')
-                        ->relationship('secondaryInternalPage','title')
-                        ->searchable()
-                        ->visible(fn($get) => $get('secondary_button_type') === 'internal'),
-                    TextInput::make('secondary_button_url')
-                        ->label('Secondary External URL')
-                        ->url()
-                        ->visible(fn($get) => $get('secondary_button_type') === 'external'),
-                ])->columns(2)->columnSpan(12),
-            ]),
+            Section::make('Primary Action')
+                ->schema([
+                    Grid::make(12)->schema([
+                        TextInput::make('primary_button_text')
+                            ->label('Button text')
+                            ->maxLength(255)
+                            ->columnSpan(4),
+                        Select::make('primary_button_type')
+                            ->label('Link type')
+                            ->options(['internal' => 'Internal page', 'external' => 'External URL'])
+                            ->required()
+                            ->live()
+                            ->columnSpan(3),
+                        // NOTE: use options() instead of relationship() to avoid RelationManager owner-model issues
+                        Select::make('primary_button_page_id')
+                            ->label('Internal page')
+                            ->options(fn () => Page::query()->orderBy('title')->pluck('title', 'id'))
+                            ->searchable()
+                            ->visible(fn (Get $get) => $get('primary_button_type') === 'internal')
+                            ->columnSpan(5),
+                        TextInput::make('primary_button_url')
+                            ->label('External URL')
+                            ->url()
+                            ->visible(fn (Get $get) => $get('primary_button_type') === 'external')
+                            ->columnSpan(5),
+                    ]),
+                ])
+                ->collapsible(),
+
+            Section::make('Secondary Action')
+                ->schema([
+                    Grid::make(12)->schema([
+                        TextInput::make('secondary_button_text')
+                            ->label('Button text')
+                            ->maxLength(255)
+                            ->columnSpan(4),
+                        Select::make('secondary_button_type')
+                            ->label('Link type')
+                            ->options(['internal' => 'Internal page', 'external' => 'External URL'])
+                            ->required()
+                            ->live()
+                            ->columnSpan(3),
+                        Select::make('secondary_button_page_id')
+                            ->label('Internal page')
+                            ->options(fn () => Page::query()->orderBy('title')->pluck('title', 'id'))
+                            ->searchable()
+                            ->visible(fn (Get $get) => $get('secondary_button_type') === 'internal')
+                            ->columnSpan(5),
+                        TextInput::make('secondary_button_url')
+                            ->label('External URL')
+                            ->url()
+                            ->visible(fn (Get $get) => $get('secondary_button_type') === 'external')
+                            ->columnSpan(5),
+                    ]),
+                ])
+                ->collapsible(),
         ];
     }
 }

@@ -3,7 +3,7 @@
 namespace App\CMS\Sections;
 
 use Filament\Forms;
-use Filament\Forms\Components\{Grid, TextInput, Textarea, Select};
+use Filament\Forms\Components\{Grid, TextInput, Textarea, Select, FileUpload};
 use App\Models\Product;
 
 class TopProductsSectionForm
@@ -15,18 +15,18 @@ class TopProductsSectionForm
                 TextInput::make('title')->required()->maxLength(255)->columnSpan(6),
                 Textarea::make('body')->rows(3)->columnSpan(6),
 
-                // Product picker with "create new" inline modal
+                // ⬇️ use options(), not relationship()
                 Select::make('products')
                     ->label('Products')
-                    ->relationship('products','name')
                     ->multiple()
                     ->searchable()
                     ->preload()
+                    ->options(Product::query()->pluck('name','id'))
                     ->createOptionForm([
                         TextInput::make('name')->required()->maxLength(255),
                         TextInput::make('price')->numeric()->required(),
                         TextInput::make('sku')->maxLength(64)->unique(ignoreRecord: true),
-                        \Filament\Forms\Components\FileUpload::make('image_path')
+                        FileUpload::make('image_path')
                             ->disk('public')->directory('uploads/products')->image()->imageEditor(),
                     ])
                     ->columnSpan(12),
