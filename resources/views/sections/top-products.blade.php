@@ -2,56 +2,37 @@
     <div class="container">
         <div class="row">
 
-            <!-- Start Column 1 -->
+            <!-- Left column: heading/body + button -->
             <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
-                <h2 class="mb-4 section-title">Crafted with excellent material.</h2>
-                <p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. </p>
-                <p><a href="shop.html" class="btn">Explore</a></p>
-            </div> 
-            <!-- End Column 1 -->
-
-            <!-- Start Column 2 -->
-            <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                <a class="product-item" href="cart.html">
-                    <img src="{{ asset('assets/images/product-1.png') }}" class="img-fluid product-thumbnail">
-                    <h3 class="product-title">Nordic Chair</h3>
-                    <strong class="product-price">$50.00</strong>
-
-                    <span class="icon-cross">
-                        <img src="{{ asset('assets/images/cross.svg') }}" class="img-fluid">
-                    </span>
-                </a>
-            </div> 
-            <!-- End Column 2 -->
-
-            <!-- Start Column 3 -->
-            <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                <a class="product-item" href="cart.html">
-                    <img src="{{ asset('assets/images/product-2.png') }}" class="img-fluid product-thumbnail">
-                    <h3 class="product-title">Kruzo Aero Chair</h3>
-                    <strong class="product-price">$78.00</strong>
-
-                    <span class="icon-cross">
-                        <img src="{{ asset('assets/images/cross.svg') }}" class="img-fluid">
-                    </span>
-                </a>
+                <h2 class="mb-4 section-title">{{ $section->title }}</h2>
+                @if(!empty($section->body))
+                    <p class="mb-4">{{ $section->body }}</p>
+                @endif
+                @if(!empty($section->button_text) && $section->button_url)
+                    <p><a href="{{ $section->button_url }}" class="btn">{{ $section->button_text }}</a></p>
+                @endif
             </div>
-            <!-- End Column 3 -->
 
-            <!-- Start Column 4 -->
-            <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                <a class="product-item" href="cart.html">
-                    <img src="{{ asset('assets/images/product-3.png') }}" class="img-fluid product-thumbnail">
-                    <h3 class="product-title">Ergonomic Chair</h3>
-                    <strong class="product-price">$43.00</strong>
-
-                    <span class="icon-cross">
-                        <img src="{{ asset('assets/images/cross.svg') }}" class="img-fluid">
-                    </span>
-                </a>
-            </div>
-            <!-- End Column 4 -->
+            <!-- Products grid -->
+            @forelse($section->products as $product)
+                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+                    <div class="product-item">
+                        @if(!empty($product->image_path))
+                            <img src="{{ asset('storage/' . $product->image_path) }}" class="img-fluid product-thumbnail">
+                        @endif
+                        <h3 class="product-title">{{ $product->name }}</h3>
+                        @if(!is_null($product->price))
+                            <strong class="product-price">${{ number_format($product->price, 2) }}</strong>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="col-12 col-md-9">
+                    <p class="text-muted">No products selected.</p>
+                </div>
+            @endforelse
 
         </div>
     </div>
+    
 </div>

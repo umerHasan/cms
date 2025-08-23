@@ -3,15 +3,31 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TopProductSection extends Model
 {
-    protected $fillable = ['title','body'];
+    protected $fillable = [
+        'title', 'body',
+        'button_text','button_type','button_page_id','button_url',
+    ];
 
     public function products() {
         return $this->belongsToMany(Product::class, 'product_top_product_section')
             ->withTimestamps()
             ->withPivot('sort_order')
             ->orderByPivot('sort_order');
+    }
+
+    public function internalPage(): BelongsTo
+    {
+        return $this->belongsTo(Page::class, 'button_page_id');
+    }
+
+    public function getButtonUrlAttribute(): ?string
+    {
+        return $this->button_type === 'internal'
+            ? ($this->internalPage?->full_path ? url($this->internalPage->full_path) : null)
+            : $this->button_url;
     }
 }
