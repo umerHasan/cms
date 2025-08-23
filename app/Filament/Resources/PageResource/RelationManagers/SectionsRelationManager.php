@@ -136,10 +136,40 @@ class SectionsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->modalWidth('5xl')
+                    // Pre-fill the form with the concrete section model's attributes
+                    ->fillForm(function (Model $record): array {
+                        $state = [
+                            'section_type' => $record->section_type,
+                            'view_file'    => $record->view_file,
+                            'sort_order'   => $record->sort_order,
+                        ];
+
+                        $sectionable = $record->sectionable;
+                        if ($sectionable) {
+                            // Merge all fillable attributes from the concrete model
+                            $state = array_merge($sectionable->toArray(), $state);
+
+                            // If the section has products relation, prefill selected IDs in order
+                            if (method_exists($sectionable, 'products')) {
+                                $state['products'] = $sectionable->products()->pluck('id')->toArray();
+                            }
+
+                            // Ensure section_type/view fallback from the model if not stored
+                            if (empty($state['section_type'])) {
+                                $def = SectionType::forModel(get_class($sectionable));
+                                if ($def) {
+                                    $state['section_type'] = $def['key'];
+                                    $state['view_file'] = $state['view_file'] ?: ($def['view'] ?? null);
+                                }
+                            }
+                        }
+
+                        return $state;
+                    })
                     ->using(function (Model $record, array $data): Model {
                         return DB::transaction(function () use ($record, $data) {
                             $def = SectionType::get($data['section_type']);
-                    
+
                             $sectionable = $record->sectionable;
                             if (! $sectionable || get_class($sectionable) !== $def['model']) {
                                 if ($sectionable) {
