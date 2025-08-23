@@ -26,6 +26,12 @@ class SectionType
                 'view'  => 'testimonials',
                 'form'  => \App\CMS\Sections\TestimonialsSectionForm::class,
             ],
+            'why-choose-us' => [
+                'label' => 'Why Choose Us',
+                'model' => \App\Models\WhyChooseUsSection::class,
+                'view'  => 'why-choose-us',
+                'form'  => \App\CMS\Sections\WhyChooseUsSectionForm::class,
+            ],
         ];
     }
 

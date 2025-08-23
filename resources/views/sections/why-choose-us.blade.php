@@ -2,56 +2,45 @@
     <div class="container">
         <div class="row justify-content-between">
             <div class="col-lg-6">
-                <h2 class="section-title">Why Choose Us</h2>
-                <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique.</p>
+                <h2 class="section-title">{{ $section->title ?? 'Why Choose Us' }}</h2>
+                @if(!empty($section->body))
+                    <p>{{ $section->body }}</p>
+                @endif
 
                 <div class="row my-5">
-                    <div class="col-6 col-md-6">
-                        <div class="feature">
-                            <div class="icon">
-                                <img src="{{ asset('assets/images/truck.svg') }}" alt="Image" class="imf-fluid">
+                    @forelse(($section->features ?? []) as $item)
+                        <div class="col-6 col-md-6">
+                            <div class="feature">
+                                <div class="icon">
+                                    @if(!empty($item['icon']))
+                                        <img src="{{ asset('storage/' . $item['icon']) }}" alt="{{ $item['title'] ?? 'Icon' }}" class="imf-fluid">
+                                    @else
+                                        <img src="{{ asset('assets/images/support.svg') }}" alt="Icon" class="imf-fluid">
+                                    @endif
+                                </div>
+                                @if(!empty($item['title']))
+                                    <h3>{{ $item['title'] }}</h3>
+                                @endif
+                                @if(!empty($item['description']))
+                                    <p>{{ $item['description'] }}</p>
+                                @endif
                             </div>
-                            <h3>Fast &amp; Free Shipping</h3>
-                            <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
                         </div>
-                    </div>
-
-                    <div class="col-6 col-md-6">
-                        <div class="feature">
-                            <div class="icon">
-                                <img src="{{ asset('assets/images/bag.svg') }}" alt="Image" class="imf-fluid">
-                            </div>
-                            <h3>Easy to Shop</h3>
-                            <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
+                    @empty
+                        <div class="col-12">
+                            <p class="text-muted">No features added.</p>
                         </div>
-                    </div>
-
-                    <div class="col-6 col-md-6">
-                        <div class="feature">
-                            <div class="icon">
-                                <img src="{{ asset('assets/images/support.svg') }}" alt="Image" class="imf-fluid">
-                            </div>
-                            <h3>24/7 Support</h3>
-                            <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-md-6">
-                        <div class="feature">
-                            <div class="icon">
-                                <img src="{{ asset('assets/images/return.svg') }}" alt="Image" class="imf-fluid">
-                            </div>
-                            <h3>Hassle Free Returns</h3>
-                            <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
-                        </div>
-                    </div>
-
+                    @endforelse
                 </div>
             </div>
 
             <div class="col-lg-5">
                 <div class="img-wrap">
-                    <img src="{{ asset('assets/images/why-choose-us-img.jpg') }}" alt="Image" class="img-fluid">
+                    @if(!empty($section->image_path))
+                        <img src="{{ asset('storage/' . $section->image_path) }}" alt="Why Choose Us" class="img-fluid">
+                    @else
+                        <img src="{{ asset('assets/images/why-choose-us-img.jpg') }}" alt="Why Choose Us" class="img-fluid">
+                    @endif
                 </div>
             </div>
 
