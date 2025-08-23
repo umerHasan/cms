@@ -32,6 +32,12 @@ class SectionType
                 'view'  => 'why-choose-us',
                 'form'  => \App\CMS\Sections\WhyChooseUsSectionForm::class,
             ],
+            'we-help' => [
+                'label' => 'We Help',
+                'model' => \App\Models\WeHelpSection::class,
+                'view'  => 'we-help',
+                'form'  => \App\CMS\Sections\WeHelpSectionForm::class,
+            ],
         ];
     }
 
