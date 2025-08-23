@@ -44,6 +44,12 @@ class SectionType
                 'view'  => 'popular-products',
                 'form'  => \App\CMS\Sections\PopularProductsSectionForm::class,
             ],
+            'blog' => [
+                'label' => 'Blog',
+                'model' => \App\Models\BlogSection::class,
+                'view'  => 'blog',
+                'form'  => \App\CMS\Sections\BlogSectionForm::class,
+            ],
         ];
     }
 

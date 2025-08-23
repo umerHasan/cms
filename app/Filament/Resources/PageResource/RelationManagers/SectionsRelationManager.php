@@ -140,6 +140,20 @@ class SectionsRelationManager extends RelationManager
                                     $sectionable->products()->sync($sync);
                                 }
                             }
+
+                            if (method_exists($sectionable, 'posts')) {
+                                $sync = [];
+                                if (isset($data['post_items'])) {
+                                    foreach (array_values($data['post_items']) as $i => $row) {
+                                        if (!empty($row['post_id'])) {
+                                            $sync[$row['post_id']] = ['sort_order' => $i];
+                                        }
+                                    }
+                                }
+                                if (!empty($sync)) {
+                                    $sectionable->posts()->sync($sync);
+                                }
+                            }
                     
                             return $ps;
                         });
@@ -167,6 +181,12 @@ class SectionsRelationManager extends RelationManager
                                 $ids = $sectionable->products()->pluck('products.id')->toArray();
                                 $state['products'] = $ids; // backward compatibility if a Select is used
                                 $state['product_items'] = array_map(fn ($id) => ['product_id' => $id], $ids);
+                            }
+
+                            // Prefill posts (for blog section)
+                            if (method_exists($sectionable, 'posts')) {
+                                $postIds = $sectionable->posts()->pluck('posts.id')->toArray();
+                                $state['post_items'] = array_map(fn ($id) => ['post_id' => $id], $postIds);
                             }
 
                             // Ensure section_type/view fallback from the model if not stored
@@ -219,6 +239,20 @@ class SectionsRelationManager extends RelationManager
                                     $sectionable->products()->sync($sync);
                                 }
                             }
+
+                            if (method_exists($sectionable, 'posts')) {
+                                $sync = [];
+                                if (isset($data['post_items'])) {
+                                    foreach (array_values($data['post_items']) as $i => $row) {
+                                        if (!empty($row['post_id'])) {
+                                            $sync[$row['post_id']] = ['sort_order' => $i];
+                                        }
+                                    }
+                                }
+                                if (!empty($sync)) {
+                                    $sectionable->posts()->sync($sync);
+                                }
+                            }
                     
                             return $record->refresh();
                         });
@@ -239,6 +273,9 @@ class SectionsRelationManager extends RelationManager
         }
         if ($typeKey === 'popular-products') {
             $ignore[] = 'product_items';
+        }
+        if ($typeKey === 'blog') {
+            $ignore[] = 'post_items';
         }
         return collect($data)->except($ignore)->all();
     }
