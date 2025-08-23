@@ -61,7 +61,9 @@ class SectionsRelationManager extends RelationManager
             // Section fields area (hidden until a type is chosen)
             Section::make('Section Fields')
                 ->schema(function (Get $get) {
-                    $key = $get('section_type');
+                    // Ensure the schema renders on initial open by falling back to the mounted record's type
+                    $mounted = method_exists($this, 'getMountedTableActionRecord') ? $this->getMountedTableActionRecord() : null;
+                    $key = $get('section_type') ?: ($mounted->section_type ?? null);
                     if (! $key) {
                         return [
                             Placeholder::make('note')
@@ -151,7 +153,8 @@ class SectionsRelationManager extends RelationManager
 
                             // If the section has products relation, prefill selected IDs in order
                             if (method_exists($sectionable, 'products')) {
-                                $state['products'] = $sectionable->products()->pluck('id')->toArray();
+                                // Qualify the column to avoid SQLite ambiguous column errors
+                                $state['products'] = $sectionable->products()->pluck('products.id')->toArray();
                             }
 
                             // Ensure section_type/view fallback from the model if not stored

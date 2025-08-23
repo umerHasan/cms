@@ -26,8 +26,10 @@ class TopProductSection extends Model
 
     public function getButtonUrlAttribute(): ?string
     {
-        return $this->button_type === 'internal'
-            ? ($this->internalPage?->full_path ? url($this->internalPage->full_path) : null)
-            : $this->button_url;
+        if ($this->button_type === 'internal') {
+            return $this->internalPage?->full_path ? url($this->internalPage->full_path) : null;
+        }
+        // Return the raw stored value to avoid accessor recursion
+        return $this->attributes['button_url'] ?? null;
     }
 }

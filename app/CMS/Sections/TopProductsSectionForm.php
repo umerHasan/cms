@@ -20,10 +20,23 @@ class TopProductsSectionForm
                 // ⬇️ use options(), not relationship()
                 Select::make('products')
                     ->label('Products')
+                    // Ensure the state is always an array for multiple select
+                    ->default([])
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->options(Product::query()->pluck('name','id'))
+                    ->options(fn () => Product::query()->orderBy('name')->pluck('name','id')->all())
+                    ->getSearchResultsUsing(fn (string $search) =>
+                        Product::query()
+                            ->where('name', 'like', "%{$search}%")
+                            ->orderBy('name')
+                            ->limit(50)
+                            ->pluck('name', 'id')
+                            ->all()
+                    )
+                    ->getOptionLabelUsing(fn ($value) =>
+                        Product::query()->whereKey($value)->value('name')
+                    )
                     ->createOptionForm([
                         TextInput::make('name')->required()->maxLength(255),
                         TextInput::make('price')->numeric()->required(),
@@ -31,6 +44,11 @@ class TopProductsSectionForm
                         FileUpload::make('image_path')
                             ->disk('public')->directory('uploads/products')->image()->imageEditor(),
                     ])
+                    ->createOptionUsing(function (array $data) {
+                        $product = Product::create($data);
+                        // Return the primary key to append to the field state; label resolved via getOptionLabelUsing()
+                        return $product->getKey();
+                    })
                     ->columnSpan(12),
             ]),
 
