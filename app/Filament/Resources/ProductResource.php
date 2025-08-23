@@ -21,8 +21,9 @@ class ProductResource extends Resource
     {
         return $form->schema([
             TextInput::make('name')->required(),
+            TextInput::make('slug')->required()->unique(ignoreRecord: true),
             TextInput::make('price')->numeric()->required(),
-            TextInput::make('sku')->unique(ignoreRecord: true),
+            Forms\Components\Textarea::make('description')->rows(4),
             FileUpload::make('image_path')->disk('public')->directory('uploads/products')->image()->imageEditor(),
             Toggle::make('is_active'),
         ]);
@@ -32,8 +33,8 @@ class ProductResource extends Resource
     {
         return $table->columns([
             TextColumn::make('name')->searchable(),
+            TextColumn::make('slug')->searchable(),
             TextColumn::make('price')->money('usd', locale: 'en_US'),
-            TextColumn::make('sku'),
             IconColumn::make('is_active')->boolean(),
         ])->defaultSort('updated_at','desc');
     }

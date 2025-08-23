@@ -9,6 +9,11 @@ class Product extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name','price','image_path','sku','is_active'];
+    protected $fillable = ['name','slug','description','price','image_path','sku','is_active'];
     protected $casts = ['is_active' => 'bool'];
+
+    public function getDetailUrlAttribute(): ?string
+    {
+        return $this->slug ? url('/products/' . $this->slug) : null;
+    }
 }

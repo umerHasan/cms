@@ -123,12 +123,22 @@ class SectionsRelationManager extends RelationManager
                                 'sort_order'       => (int) $this->ownerRecord->sections()->max('sort_order') + 1,
                             ]);
                     
-                            if (method_exists($sectionable, 'products') && isset($data['products'])) {
+                            if (method_exists($sectionable, 'products')) {
                                 $sync = [];
-                                foreach (array_values($data['products']) as $i => $pid) {
-                                    $sync[$pid] = ['sort_order' => $i];
+                                if (isset($data['product_items'])) {
+                                    foreach (array_values($data['product_items']) as $i => $row) {
+                                        if (!empty($row['product_id'])) {
+                                            $sync[$row['product_id']] = ['sort_order' => $i];
+                                        }
+                                    }
+                                } elseif (isset($data['products'])) {
+                                    foreach (array_values($data['products']) as $i => $pid) {
+                                        $sync[$pid] = ['sort_order' => $i];
+                                    }
                                 }
-                                $sectionable->products()->sync($sync);
+                                if (!empty($sync)) {
+                                    $sectionable->products()->sync($sync);
+                                }
                             }
                     
                             return $ps;
@@ -154,7 +164,9 @@ class SectionsRelationManager extends RelationManager
                             // If the section has products relation, prefill selected IDs in order
                             if (method_exists($sectionable, 'products')) {
                                 // Qualify the column to avoid SQLite ambiguous column errors
-                                $state['products'] = $sectionable->products()->pluck('products.id')->toArray();
+                                $ids = $sectionable->products()->pluck('products.id')->toArray();
+                                $state['products'] = $ids; // backward compatibility if a Select is used
+                                $state['product_items'] = array_map(fn ($id) => ['product_id' => $id], $ids);
                             }
 
                             // Ensure section_type/view fallback from the model if not stored
@@ -190,12 +202,22 @@ class SectionsRelationManager extends RelationManager
                                 'sectionable_id'   => $sectionable->id,
                             ]);
                     
-                            if (method_exists($sectionable, 'products') && isset($data['products'])) {
+                            if (method_exists($sectionable, 'products')) {
                                 $sync = [];
-                                foreach (array_values($data['products']) as $i => $pid) {
-                                    $sync[$pid] = ['sort_order' => $i];
+                                if (isset($data['product_items'])) {
+                                    foreach (array_values($data['product_items']) as $i => $row) {
+                                        if (!empty($row['product_id'])) {
+                                            $sync[$row['product_id']] = ['sort_order' => $i];
+                                        }
+                                    }
+                                } elseif (isset($data['products'])) {
+                                    foreach (array_values($data['products']) as $i => $pid) {
+                                        $sync[$pid] = ['sort_order' => $i];
+                                    }
                                 }
-                                $sectionable->products()->sync($sync);
+                                if (!empty($sync)) {
+                                    $sectionable->products()->sync($sync);
+                                }
                             }
                     
                             return $record->refresh();
@@ -212,8 +234,11 @@ class SectionsRelationManager extends RelationManager
     private static function extractConcreteSectionData(array $data, string $typeKey): array
     {
         $ignore = ['section_type','view_file','sort_order'];
-        if ($typeKey === 'top-products') {
+        if (in_array($typeKey, ['top-products','popular-products'])) {
             $ignore[] = 'products';
+        }
+        if ($typeKey === 'popular-products') {
+            $ignore[] = 'product_items';
         }
         return collect($data)->except($ignore)->all();
     }

@@ -38,6 +38,12 @@ class SectionType
                 'view'  => 'we-help',
                 'form'  => \App\CMS\Sections\WeHelpSectionForm::class,
             ],
+            'popular-products' => [
+                'label' => 'Popular Products',
+                'model' => \App\Models\PopularProductsSection::class,
+                'view'  => 'popular-products',
+                'form'  => \App\CMS\Sections\PopularProductsSectionForm::class,
+            ],
         ];
     }
 
