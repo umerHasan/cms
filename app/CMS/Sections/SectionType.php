@@ -20,6 +20,12 @@ class SectionType
                 'view'  => 'top-products',
                 'form'  => \App\CMS\Sections\TopProductsSectionForm::class,
             ],
+            'testimonials' => [
+                'label' => 'Testimonials',
+                'model' => \App\Models\TestimonialSection::class,
+                'view'  => 'testimonials',
+                'form'  => \App\CMS\Sections\TestimonialsSectionForm::class,
+            ],
         ];
     }
 
