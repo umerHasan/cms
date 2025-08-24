@@ -3,7 +3,7 @@
 namespace App\CMS\Sections;
 
 use Filament\Forms;
-use Filament\Forms\Components\{Grid, TextInput, Textarea, Select, FileUpload, Section};
+use Filament\Forms\Components\{Grid, TextInput, Textarea, Select, FileUpload, Section, Tabs};
 use App\Models\Product;
 use App\Models\Page;
 use Filament\Forms\Get;
@@ -14,8 +14,17 @@ class TopProductsSectionForm
     {
         return [
             Grid::make(12)->schema([
-                TextInput::make('title')->required()->maxLength(255)->columnSpan(6),
-                Textarea::make('body')->rows(3)->columnSpan(6),
+                Tabs::make('i18n_header')
+                    ->tabs([
+                        Tabs\Tab::make('English')->schema([
+                            TextInput::make('title')->required()->maxLength(255)->columnSpan(6),
+                            Textarea::make('body')->rows(3)->columnSpan(6),
+                        ])->columns(12),
+                        Tabs\Tab::make('Urdu')->schema([
+                            TextInput::make('title_ur')->label('Title (Urdu)')->maxLength(255)->columnSpan(6),
+                            Textarea::make('body_ur')->label('Body (Urdu)')->rows(3)->columnSpan(6),
+                        ])->columns(12),
+                    ])->columnSpan(12),
 
                 // ⬇️ use options(), not relationship()
                 Select::make('products')
@@ -38,11 +47,20 @@ class TopProductsSectionForm
                         Product::query()->whereKey($value)->value('name')
                     )
                     ->createOptionForm([
-                        TextInput::make('name')->required()->maxLength(255),
+                        Tabs::make('i18n')
+                            ->tabs([
+                                Tabs\Tab::make('English')->schema([
+                                    TextInput::make('name')->required()->maxLength(255),
+                                    Forms\Components\Textarea::make('description')->rows(3),
+                                ]),
+                                Tabs\Tab::make('Urdu')->schema([
+                                    TextInput::make('name_ur')->label('Name (Urdu)')->maxLength(255),
+                                    Forms\Components\Textarea::make('description_ur')->label('Description (Urdu)')->rows(3),
+                                ]),
+                            ]),
                         TextInput::make('price')->numeric()->required(),
                         TextInput::make('sku')->maxLength(64)->unique(ignoreRecord: true),
-                        FileUpload::make('image_path')
-                            ->disk('public')->directory('uploads/products')->image()->imageEditor(),
+                        FileUpload::make('image_path')->disk('public')->directory('uploads/products')->image()->imageEditor(),
                     ])
                     ->createOptionUsing(function (array $data) {
                         $product = Product::create($data);
@@ -55,10 +73,15 @@ class TopProductsSectionForm
             Section::make('CTA Button')
                 ->schema([
                     Grid::make(12)->schema([
-                        TextInput::make('button_text')
-                            ->label('Button text')
-                            ->maxLength(255)
-                            ->columnSpan(4),
+                        Tabs::make('i18n_button')
+                            ->tabs([
+                                Tabs\Tab::make('English')->schema([
+                                    TextInput::make('button_text')->label('Button text')->maxLength(255)->columnSpan(12),
+                                ]),
+                                Tabs\Tab::make('Urdu')->schema([
+                                    TextInput::make('button_text_ur')->label('Button text (Urdu)')->maxLength(255)->columnSpan(12),
+                                ]),
+                            ])->columnSpan(4),
                         Select::make('button_type')
                             ->label('Link type')
                             ->options(['internal' => 'Internal page', 'external' => 'External URL'])

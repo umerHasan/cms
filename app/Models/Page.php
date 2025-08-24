@@ -10,8 +10,8 @@ class Page extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'parent_id','title','slug','full_path',
-        'meta_title','meta_description','meta_keywords',
+        'parent_id','title','title_ur','slug','full_path',
+        'meta_title','meta_title_ur','meta_description','meta_description_ur','meta_keywords','meta_keywords_ur',
         'is_published','published_at','created_by','updated_by',
     ];
 

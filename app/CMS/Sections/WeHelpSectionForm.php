@@ -4,7 +4,7 @@ namespace App\CMS\Sections;
 
 use App\Models\Page;
 use Filament\Forms;
-use Filament\Forms\Components\{Grid, TextInput, Textarea, FileUpload, Repeater, Section, Select};
+use Filament\Forms\Components\{Grid, TextInput, Textarea, FileUpload, Repeater, Section, Select, Tabs};
 use Filament\Forms\Get;
 
 class WeHelpSectionForm
@@ -15,8 +15,17 @@ class WeHelpSectionForm
             Section::make('Content')
                 ->schema([
                     Grid::make(12)->schema([
-                        TextInput::make('title')->label('Title')->required()->maxLength(255)->columnSpan(6),
-                        Textarea::make('body')->label('Body')->rows(3)->columnSpan(6),
+                        Tabs::make('i18n_content')
+                            ->tabs([
+                                Tabs\Tab::make('English')->schema([
+                                    TextInput::make('title')->label('Title')->required()->maxLength(255)->columnSpan(6),
+                                    Textarea::make('body')->label('Body')->rows(3)->columnSpan(6),
+                                ])->columns(12),
+                                Tabs\Tab::make('Urdu')->schema([
+                                    TextInput::make('title_ur')->label('Title (Urdu)')->maxLength(255)->columnSpan(6),
+                                    Textarea::make('body_ur')->label('Body (Urdu)')->rows(3)->columnSpan(6),
+                                ])->columns(12),
+                            ])->columnSpan(12),
                     ]),
                 ])
                 ->collapsible(),
@@ -33,21 +42,44 @@ class WeHelpSectionForm
 
             Section::make('Bullet Points')
                 ->schema([
-                    Repeater::make('list_items')
-                        ->label('Items')
-                        ->default([])
-                        ->reorderable(true)
-                        ->schema([
-                            TextInput::make('text')->label('Text')->maxLength(255)->required(),
-                        ])
-                        ->columnSpanFull(),
+                    Tabs::make('i18n_list')
+                        ->tabs([
+                            Tabs\Tab::make('English')->schema([
+                                Repeater::make('list_items')
+                                    ->label('Items')
+                                    ->default([])
+                                    ->reorderable(true)
+                                    ->schema([
+                                        TextInput::make('text')->label('Text')->maxLength(255)->required(),
+                                    ])
+                                    ->columnSpanFull(),
+                            ]),
+                            Tabs\Tab::make('Urdu')->schema([
+                                Repeater::make('list_items_ur')
+                                    ->label('Items (Urdu)')
+                                    ->default([])
+                                    ->reorderable(true)
+                                    ->schema([
+                                        TextInput::make('text')->label('Text (Urdu)')->maxLength(255)->required(),
+                                    ])
+                                    ->columnSpanFull(),
+                            ]),
+                        ]),
                 ])
                 ->collapsible(),
 
             Section::make('CTA Button')
                 ->schema([
                     Grid::make(12)->schema([
-                        TextInput::make('button_text')->label('Button text')->maxLength(255)->columnSpan(4),
+                        Tabs::make('i18n_button')
+                            ->tabs([
+                                Tabs\Tab::make('English')->schema([
+                                    TextInput::make('button_text')->label('Button text')->maxLength(255)->columnSpan(12),
+                                ]),
+                                Tabs\Tab::make('Urdu')->schema([
+                                    TextInput::make('button_text_ur')->label('Button text (Urdu)')->maxLength(255)->columnSpan(12),
+                                ]),
+                            ])->columnSpan(4),
                         Select::make('button_type')
                             ->label('Link type')
                             ->options(['internal' => 'Internal page', 'external' => 'External URL'])
@@ -72,4 +104,3 @@ class WeHelpSectionForm
         ];
     }
 }
-

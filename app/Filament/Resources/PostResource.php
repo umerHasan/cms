@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PostResource\Pages;
 use App\Models\Post;
 use Filament\Forms;
-use Filament\Forms\Components\{TextInput, Toggle, FileUpload, DateTimePicker, RichEditor};
+use Filament\Forms\Components\{TextInput, Toggle, FileUpload, DateTimePicker, RichEditor, Tabs, Textarea};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -21,21 +21,41 @@ class PostResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            TextInput::make('title')->required()->maxLength(255),
-            TextInput::make('slug')->required()->unique(ignoreRecord: true),
-            TextInput::make('author_name')->label('Author')->maxLength(255),
-            DateTimePicker::make('published_at')->label('Publish date'),
-            Toggle::make('is_published')->default(true),
-            FileUpload::make('image_path')->disk('public')->directory('uploads/posts')->image()->imageEditor(),
-            TextInput::make('excerpt')->maxLength(255),
-            RichEditor::make('body')
-                ->toolbarButtons([
-                    'blockquote', 'bold', 'bulletList', 'orderedList', 'italic', 'strike', 'underline',
-                    'h2', 'h3', 'link', 'codeBlock', 'redo', 'undo', 'attachFiles',
+            Tabs::make('i18n')
+                ->tabs([
+                    Tabs\Tab::make('English')->schema([
+                        TextInput::make('title')->required()->maxLength(255)->columnSpan(12),
+                        TextInput::make('author_name')->label('Author')->maxLength(255)->columnSpan(12),
+                        TextInput::make('excerpt')->maxLength(255)->columnSpan(12),
+                        RichEditor::make('body')
+                            ->toolbarButtons([
+                                'blockquote', 'bold', 'bulletList', 'orderedList', 'italic', 'strike', 'underline',
+                                'h2', 'h3', 'link', 'codeBlock', 'redo', 'undo', 'attachFiles',
+                            ])
+                            ->fileAttachmentsDisk('public')
+                            ->fileAttachmentsDirectory('uploads/posts/body')
+                            ->columnSpanFull(),
+                    ])->columns(12),
+                    Tabs\Tab::make('Urdu')->schema([
+                        TextInput::make('title_ur')->label('Title (Urdu)')->maxLength(255)->columnSpan(12),
+                        TextInput::make('author_name_ur')->label('Author (Urdu)')->maxLength(255)->columnSpan(12),
+                        TextInput::make('excerpt_ur')->label('Excerpt (Urdu)')->maxLength(255)->columnSpan(12),
+                        RichEditor::make('body_ur')
+                            ->label('Body (Urdu)')
+                            ->toolbarButtons([
+                                'blockquote', 'bold', 'bulletList', 'orderedList', 'italic', 'strike', 'underline',
+                                'h2', 'h3', 'link', 'codeBlock', 'redo', 'undo', 'attachFiles',
+                            ])
+                            ->fileAttachmentsDisk('public')
+                            ->fileAttachmentsDirectory('uploads/posts/body')
+                            ->columnSpanFull(),
+                    ])->columns(12),
                 ])
-                ->fileAttachmentsDisk('public')
-                ->fileAttachmentsDirectory('uploads/posts/body')
                 ->columnSpanFull(),
+            TextInput::make('slug')->required()->unique(ignoreRecord: true)->columnSpan(12),
+            DateTimePicker::make('published_at')->label('Publish date')->columnSpan(6),
+            Toggle::make('is_published')->default(true)->columnSpan(6),
+            FileUpload::make('image_path')->disk('public')->directory('uploads/posts')->image()->imageEditor()->columnSpan(12),
         ]);
     }
 

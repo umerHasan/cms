@@ -10,7 +10,7 @@ class Post extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'title','slug','excerpt','body','image_path','author_name','published_at','is_published'
+        'title','title_ur','slug','excerpt','excerpt_ur','body','body_ur','image_path','author_name','author_name_ur','published_at','is_published'
     ];
 
     protected $casts = [
@@ -23,4 +23,3 @@ class Post extends Model
         return $this->slug ? url('/blog/' . $this->slug) : null;
     }
 }
-

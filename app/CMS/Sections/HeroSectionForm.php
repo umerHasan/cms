@@ -4,7 +4,7 @@ namespace App\CMS\Sections;
 
 use App\Models\Page;
 use Filament\Forms;
-use Filament\Forms\Components\{Grid, TextInput, Textarea, Select, FileUpload, Section};
+use Filament\Forms\Components\{Grid, TextInput, Textarea, Select, FileUpload, Section, Tabs};
 use Filament\Forms\Get;
 
 class HeroSectionForm
@@ -24,15 +24,29 @@ class HeroSectionForm
                             ->imageEditor()
                             ->columnSpan(12),
 
-                        TextInput::make('title')
-                            ->required()
-                            ->maxLength(255)
-                            ->columnSpan(6),
-
-                        Textarea::make('description')
-                            ->label('Body')
-                            ->rows(4)
-                            ->columnSpan(6),
+                        Tabs::make('i18n_hero')
+                            ->tabs([
+                                Tabs\Tab::make('English')->schema([
+                                    TextInput::make('title')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->columnSpan(6),
+                                    Textarea::make('description')
+                                        ->label('Body')
+                                        ->rows(4)
+                                        ->columnSpan(6),
+                                ])->columns(12),
+                                Tabs\Tab::make('Urdu')->schema([
+                                    TextInput::make('title_ur')
+                                        ->label('Title (Urdu)')
+                                        ->maxLength(255)
+                                        ->columnSpan(6),
+                                    Textarea::make('description_ur')
+                                        ->label('Body (Urdu)')
+                                        ->rows(4)
+                                        ->columnSpan(6),
+                                ])->columns(12),
+                            ])->columnSpan(12),
                     ]),
                 ])
                 ->collapsible()
@@ -41,10 +55,21 @@ class HeroSectionForm
             Section::make('Primary Action')
                 ->schema([
                     Grid::make(12)->schema([
-                        TextInput::make('primary_button_text')
-                            ->label('Button text')
-                            ->maxLength(255)
-                            ->columnSpan(4),
+                        Tabs::make('i18n_primary_btn')
+                            ->tabs([
+                                Tabs\Tab::make('English')->schema([
+                                    TextInput::make('primary_button_text')
+                                        ->label('Button text')
+                                        ->maxLength(255)
+                                        ->columnSpan(12),
+                                ]),
+                                Tabs\Tab::make('Urdu')->schema([
+                                    TextInput::make('primary_button_text_ur')
+                                        ->label('Button text (Urdu)')
+                                        ->maxLength(255)
+                                        ->columnSpan(12),
+                                ]),
+                            ])->columnSpan(4),
                         Select::make('primary_button_type')
                             ->label('Link type')
                             ->options(['internal' => 'Internal page', 'external' => 'External URL'])
@@ -70,10 +95,21 @@ class HeroSectionForm
             Section::make('Secondary Action')
                 ->schema([
                     Grid::make(12)->schema([
-                        TextInput::make('secondary_button_text')
-                            ->label('Button text')
-                            ->maxLength(255)
-                            ->columnSpan(4),
+                        Tabs::make('i18n_secondary_btn')
+                            ->tabs([
+                                Tabs\Tab::make('English')->schema([
+                                    TextInput::make('secondary_button_text')
+                                        ->label('Button text')
+                                        ->maxLength(255)
+                                        ->columnSpan(12),
+                                ]),
+                                Tabs\Tab::make('Urdu')->schema([
+                                    TextInput::make('secondary_button_text_ur')
+                                        ->label('Button text (Urdu)')
+                                        ->maxLength(255)
+                                        ->columnSpan(12),
+                                ]),
+                            ])->columnSpan(4),
                         Select::make('secondary_button_type')
                             ->label('Link type')
                             ->options(['internal' => 'Internal page', 'external' => 'External URL'])

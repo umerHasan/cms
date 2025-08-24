@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class HeroSection extends Model
 {
     protected $fillable = [
-        'title','description','image_path',
-        'primary_button_text','primary_button_type','primary_button_page_id','primary_button_url',
-        'secondary_button_text','secondary_button_type','secondary_button_page_id','secondary_button_url',
+        'title','title_ur','description','description_ur','image_path',
+        'primary_button_text','primary_button_text_ur','primary_button_type','primary_button_page_id','primary_button_url',
+        'secondary_button_text','secondary_button_text_ur','secondary_button_type','secondary_button_page_id','secondary_button_url',
     ];
 
     public function primaryInternalPage() {

@@ -3,7 +3,7 @@
 namespace App\CMS\Sections;
 
 use Filament\Forms;
-use Filament\Forms\Components\{Grid, TextInput, Textarea, FileUpload, Repeater, Section, Select, Placeholder};
+use Filament\Forms\Components\{Grid, TextInput, Textarea, FileUpload, Repeater, Section, Select, Placeholder, Tabs};
 use Filament\Forms\Get;
 use App\Models\Product;
 use App\Filament\Resources\ProductResource;
@@ -14,7 +14,15 @@ class PopularProductsSectionForm
     {
         return [
             Grid::make(12)->schema([
-                TextInput::make('title')->label('Title')->maxLength(255)->columnSpan(6),
+                Tabs::make('i18n_header')
+                    ->tabs([
+                        Tabs\Tab::make('English')->schema([
+                            TextInput::make('title')->label('Title')->maxLength(255)->columnSpan(6),
+                        ])->columns(12),
+                        Tabs\Tab::make('Urdu')->schema([
+                            TextInput::make('title_ur')->label('Title (Urdu)')->maxLength(255)->columnSpan(6),
+                        ])->columns(12),
+                    ])->columnSpan(12),
             ]),
 
             Section::make('Products')
@@ -41,6 +49,26 @@ class PopularProductsSectionForm
                                             ->all()
                                     )
                                     ->getOptionLabelUsing(fn ($value) => Product::query()->whereKey($value)->value('name'))
+                                    ->createOptionForm([
+                                        Tabs::make('i18n')
+                                            ->tabs([
+                                                Tabs\Tab::make('English')->schema([
+                                                    TextInput::make('name')->required()->maxLength(255),
+                                                    Forms\Components\Textarea::make('description')->rows(3),
+                                                ]),
+                                                Tabs\Tab::make('Urdu')->schema([
+                                                    TextInput::make('name_ur')->label('Name (Urdu)')->maxLength(255),
+                                                    Forms\Components\Textarea::make('description_ur')->label('Description (Urdu)')->rows(3),
+                                                ]),
+                                            ]),
+                                        TextInput::make('price')->numeric(),
+                                        TextInput::make('sku')->maxLength(64)->unique(ignoreRecord: true),
+                                        FileUpload::make('image_path')->disk('public')->directory('uploads/products')->image()->imageEditor(),
+                                    ])
+                                    ->createOptionUsing(function (array $data) {
+                                        $product = Product::create($data);
+                                        return $product->getKey();
+                                    })
                                     ->suffixAction(
                                         Forms\Components\Actions\Action::make('manage')
                                             ->label('Manage')

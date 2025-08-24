@@ -8,14 +8,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class WeHelpSection extends Model
 {
     protected $fillable = [
-        'title', 'body',
+        'title', 'title_ur', 'body', 'body_ur',
         'grid_image_1', 'grid_image_2', 'grid_image_3',
-        'list_items',
-        'button_text', 'button_type', 'button_page_id', 'button_url',
+        'list_items','list_items_ur',
+        'button_text','button_text_ur', 'button_type', 'button_page_id', 'button_url',
     ];
 
     protected $casts = [
         'list_items' => 'array',
+        'list_items_ur' => 'array',
     ];
 
     public function internalPage(): BelongsTo
@@ -31,4 +32,3 @@ class WeHelpSection extends Model
         return $this->attributes['button_url'] ?? null;
     }
 }
-

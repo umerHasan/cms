@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
 use Filament\Forms;
-use Filament\Forms\Components\{TextInput, Toggle, FileUpload};
+use Filament\Forms\Components\{TextInput, Toggle, FileUpload, Textarea, Tabs};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -20,11 +20,21 @@ class ProductResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            TextInput::make('name')->required(),
+            Tabs::make('i18n')
+                ->tabs([
+                    Tabs\Tab::make('English')->schema([
+                        TextInput::make('name')->required()->maxLength(255),
+                        Textarea::make('description')->rows(4),
+                    ]),
+                    Tabs\Tab::make('Urdu')->schema([
+                        TextInput::make('name_ur')->label('Name (Urdu)')->maxLength(255),
+                        Textarea::make('description_ur')->label('Description (Urdu)')->rows(4),
+                    ]),
+                ]),
             TextInput::make('slug')->required()->unique(ignoreRecord: true),
             TextInput::make('price')->numeric()->required(),
-            Forms\Components\Textarea::make('description')->rows(4),
             FileUpload::make('image_path')->disk('public')->directory('uploads/products')->image()->imageEditor(),
+            TextInput::make('sku')->maxLength(64),
             Toggle::make('is_active'),
         ]);
     }

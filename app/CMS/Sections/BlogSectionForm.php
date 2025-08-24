@@ -6,7 +6,7 @@ use App\Models\Page;
 use App\Models\Post;
 use App\Filament\Resources\PostResource;
 use Filament\Forms;
-use Filament\Forms\Components\{Grid, TextInput, Textarea, FileUpload, Repeater, Section, Select, Placeholder};
+use Filament\Forms\Components\{Grid, TextInput, Textarea, FileUpload, Repeater, Section, Select, Placeholder, Tabs};
 use Filament\Forms\Get;
 
 class BlogSectionForm
@@ -15,8 +15,17 @@ class BlogSectionForm
     {
         return [
             Grid::make(12)->schema([
-                TextInput::make('title')->label('Section Title')->default('Recent Blog')->maxLength(255)->columnSpan(6),
-                TextInput::make('view_all_text')->label('View-all Text')->default('View All Posts')->maxLength(255)->columnSpan(6),
+                Tabs::make('i18n_header')
+                    ->tabs([
+                        Tabs\Tab::make('English')->schema([
+                            TextInput::make('title')->label('Section Title')->default('Recent Blog')->maxLength(255)->columnSpan(6),
+                            TextInput::make('view_all_text')->label('View-all Text')->default('View All Posts')->maxLength(255)->columnSpan(6),
+                        ])->columns(12),
+                        Tabs\Tab::make('Urdu')->schema([
+                            TextInput::make('title_ur')->label('Section Title (Urdu)')->maxLength(255)->columnSpan(6),
+                            TextInput::make('view_all_text_ur')->label('View-all Text (Urdu)')->maxLength(255)->columnSpan(6),
+                        ])->columns(12),
+                    ])->columnSpan(12),
             ]),
 
             Section::make('View All Link')
@@ -54,21 +63,40 @@ class BlogSectionForm
                                         Post::query()->where('title','like',"%{$search}%")->orderBy('published_at','desc')->limit(50)->pluck('title','id')->all()
                                     )
                                     ->createOptionForm([
-                                        TextInput::make('title')->required()->maxLength(255),
-                                        TextInput::make('slug')->required()->unique(ignoreRecord: true),
-                                        TextInput::make('author_name')->label('Author')->maxLength(255),
-                                        Forms\Components\DateTimePicker::make('published_at')->label('Publish date'),
-                                        Forms\Components\Toggle::make('is_published')->default(true),
-                                        Forms\Components\FileUpload::make('image_path')->disk('public')->directory('uploads/posts')->image()->imageEditor(),
-                                        TextInput::make('excerpt')->maxLength(255),
-                                        Forms\Components\RichEditor::make('body')
-                                            ->toolbarButtons([
-                                                'blockquote','bold','bulletList','orderedList','italic','strike','underline',
-                                                'h2','h3','link','codeBlock','redo','undo','attachFiles',
-                                            ])
-                                            ->fileAttachmentsDisk('public')
-                                            ->fileAttachmentsDirectory('uploads/posts/body')
-                                            ->columnSpanFull(),
+                                        Tabs::make('i18n')
+                                            ->tabs([
+                                                Tabs\Tab::make('English')->schema([
+                                                    TextInput::make('title')->required()->maxLength(255)->columnSpan(12),
+                                                    TextInput::make('author_name')->label('Author')->maxLength(255)->columnSpan(12),
+                                                    TextInput::make('excerpt')->maxLength(255)->columnSpan(12),
+                                                    Forms\Components\RichEditor::make('body')
+                                                        ->toolbarButtons([
+                                                            'blockquote','bold','bulletList','orderedList','italic','strike','underline',
+                                                            'h2','h3','link','codeBlock','redo','undo','attachFiles',
+                                                        ])
+                                                        ->fileAttachmentsDisk('public')
+                                                        ->fileAttachmentsDirectory('uploads/posts/body')
+                                                        ->columnSpanFull(),
+                                                ])->columns(12),
+                                                Tabs\Tab::make('Urdu')->schema([
+                                                    TextInput::make('title_ur')->label('Title (Urdu)')->maxLength(255)->columnSpan(12),
+                                                    TextInput::make('author_name_ur')->label('Author (Urdu)')->maxLength(255)->columnSpan(12),
+                                                    TextInput::make('excerpt_ur')->label('Excerpt (Urdu)')->maxLength(255)->columnSpan(12),
+                                                    Forms\Components\RichEditor::make('body_ur')
+                                                        ->label('Body (Urdu)')
+                                                        ->toolbarButtons([
+                                                            'blockquote','bold','bulletList','orderedList','italic','strike','underline',
+                                                            'h2','h3','link','codeBlock','redo','undo','attachFiles',
+                                                        ])
+                                                        ->fileAttachmentsDisk('public')
+                                                        ->fileAttachmentsDirectory('uploads/posts/body')
+                                                        ->columnSpanFull(),
+                                                ])->columns(12),
+                                            ]),
+                                        TextInput::make('slug')->required()->unique(ignoreRecord: true)->columnSpan(12),
+                                        Forms\Components\DateTimePicker::make('published_at')->label('Publish date')->columnSpan(6),
+                                        Forms\Components\Toggle::make('is_published')->default(true)->columnSpan(6),
+                                        Forms\Components\FileUpload::make('image_path')->disk('public')->directory('uploads/posts')->image()->imageEditor()->columnSpan(12),
                                     ])
                                     ->createOptionUsing(function (array $data) {
                                         $post = Post::create($data);

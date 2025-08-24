@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PopularProductsSection extends Model
 {
     protected $fillable = [
-        'title',
+        'title','title_ur',
     ];
 
     public function products()

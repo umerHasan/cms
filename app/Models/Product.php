@@ -9,7 +9,9 @@ class Product extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name','slug','description','price','image_path','sku','is_active'];
+    protected $fillable = [
+        'name','name_ur','slug','description','description_ur','price','image_path','sku','is_active'
+    ];
     protected $casts = ['is_active' => 'bool'];
 
     public function getDetailUrlAttribute(): ?string

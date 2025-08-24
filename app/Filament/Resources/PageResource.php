@@ -5,7 +5,7 @@ use App\Filament\Resources\PageResource\Pages;
 use App\Filament\Resources\PageResource\RelationManagers\SectionsRelationManager;
 use App\Models\Page;
 use Filament\Forms;
-use Filament\Forms\Components\{TextInput, Select, Toggle, Grid, Textarea};
+use Filament\Forms\Components\{TextInput, Select, Toggle, Grid, Textarea, Tabs};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -22,7 +22,6 @@ class PageResource extends Resource
     {
         return $form->schema([
             Grid::make(12)->schema([
-                TextInput::make('title')->required()->maxLength(255)->columnSpan(6),
                 Select::make('parent_id')
                     ->relationship('parent','title')
                     ->searchable()
@@ -38,9 +37,23 @@ class PageResource extends Resource
                     ->columnSpan(6),
 
                 Toggle::make('is_published')->inline(false)->columnSpan(3),
-                TextInput::make('meta_title')->maxLength(255)->columnSpan(6),
-                Textarea::make('meta_description')->rows(3)->columnSpan(12),
-                TextInput::make('meta_keywords')->helperText('Comma-separated')->columnSpan(12),
+
+                Tabs::make('i18n')
+                    ->tabs([
+                        Tabs\Tab::make('English')->schema([
+                            TextInput::make('title')->label('Title')->required()->maxLength(255)->columnSpan(6),
+                            TextInput::make('meta_title')->label('Meta title')->maxLength(255)->columnSpan(6),
+                            Textarea::make('meta_description')->label('Meta description')->rows(3)->columnSpan(12),
+                            TextInput::make('meta_keywords')->label('Meta keywords')->helperText('Comma-separated')->columnSpan(12),
+                        ])->columns(12),
+                        Tabs\Tab::make('Urdu')->schema([
+                            TextInput::make('title_ur')->label('Title (Urdu)')->maxLength(255)->columnSpan(6),
+                            TextInput::make('meta_title_ur')->label('Meta title (Urdu)')->maxLength(255)->columnSpan(6),
+                            Textarea::make('meta_description_ur')->label('Meta description (Urdu)')->rows(3)->columnSpan(12),
+                            TextInput::make('meta_keywords_ur')->label('Meta keywords (Urdu)')->helperText('Comma-separated')->columnSpan(12),
+                        ])->columns(12),
+                    ])
+                    ->columnSpan(12),
 
                 // Computed preview (read-only)
                 TextInput::make('full_path')->disabled()->dehydrated(false)->columnSpan(12),

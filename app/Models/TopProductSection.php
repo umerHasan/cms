@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TopProductSection extends Model
 {
     protected $fillable = [
-        'title', 'body',
-        'button_text','button_type','button_page_id','button_url',
+        'title','title_ur', 'body','body_ur',
+        'button_text','button_text_ur','button_type','button_page_id','button_url',
     ];
 
     public function products() {

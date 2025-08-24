@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BlogSection extends Model
 {
     protected $fillable = [
-        'title','view_all_text','view_all_type','view_all_page_id','view_all_url'
+        'title','title_ur','view_all_text','view_all_text_ur','view_all_type','view_all_page_id','view_all_url'
     ];
 
     public function posts()
@@ -31,4 +31,3 @@ class BlogSection extends Model
         return $this->attributes['view_all_url'] ?? null;
     }
 }
-
