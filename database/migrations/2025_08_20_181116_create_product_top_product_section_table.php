@@ -12,7 +12,8 @@ return new class extends Migration {
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->unsignedInteger('sort_order')->default(0)->index();
             $table->timestamps();
-            $table->unique(['top_product_section_id','product_id']);
+            // Use a short, explicit name to avoid MySQL's 64-char index name limit
+            $table->unique(['top_product_section_id','product_id'], 'ptps_section_product_unique');
         });
     }
     public function down(): void {

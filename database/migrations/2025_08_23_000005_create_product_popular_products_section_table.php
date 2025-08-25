@@ -9,7 +9,12 @@ return new class extends Migration {
         Schema::create('product_popular_products_section', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('popular_products_section_id')->constrained('popular_products_sections')->cascadeOnDelete();
+            // Define FK with a short, explicit name to stay under MySQL's 64-char limit
+            $table->foreignId('popular_products_section_id');
+            $table->foreign('popular_products_section_id', 'ppps_section_id_fk')
+                ->references('id')
+                ->on('popular_products_sections')
+                ->cascadeOnDelete();
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
         });
@@ -18,4 +23,3 @@ return new class extends Migration {
         Schema::dropIfExists('product_popular_products_section');
     }
 };
-
